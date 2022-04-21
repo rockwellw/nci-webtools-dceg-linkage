@@ -110,7 +110,7 @@ def connectMongoDBReadOnly(readonly):
 
 def retrieveTabix1000GData(query_file, coords, query_dir):
     export_s3_keys = retrieveAWSCredentials()
-    tabix_snps = export_s3_keys + " cd {2}; tabix -fhD {0}{1} | grep -v -e END".format(
+    tabix_snps = export_s3_keys + " cd {2}; tabix -fhD --separate-regions {0}{1} | grep -v -e END".format(
         query_file, coords, query_dir)
     # print("tabix_snps", tabix_snps)
     vcf = [x.decode('utf-8') for x in subprocess.Popen(tabix_snps, shell=True, stdout=subprocess.PIPE).stdout.readlines()]
@@ -344,3 +344,35 @@ def get_population(pop, request,output):
 
     return pop_ids
  
+ # Define function to correct indel alleles
+def set_alleles(a1, a2):
+    if len(a1) == 1 and len(a2) == 1:
+        a1_n = a1
+        a2_n = a2
+    elif len(a1) == 1 and len(a2) > 1:
+        a1_n = "-"
+        a2_n = a2[1:]
+    elif len(a1) > 1 and len(a2) == 1:
+        a1_n = a1[1:]
+        a2_n = "-"
+    elif len(a1) > 1 and len(a2) > 1:
+        a1_n = a1[1:]
+        a2_n = a2[1:]
+    return(a1_n, a2_n)
+
+def parse_vcf(vcf):
+    delimiter = "#chr"
+    snp_lists = str(','.join(vcf)).split(delimiter)
+    snp_dict = {}
+
+    for snp in snp_lists[1:]:
+        snp_tuple = snp.split(",")
+        snp_key = snp_tuple[0].split("-")[-1].strip()
+        vcf_list = []
+        for v in snp_tuple[1:]:#only choose the first one if dup
+            if len(v) > 0:
+                vcf_list.append(v)
+       
+        snp_dict[snp_key] = vcf_list
+    return snp_dict
+    #print(snp_dict)
