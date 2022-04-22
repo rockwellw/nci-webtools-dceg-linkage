@@ -178,7 +178,7 @@ def calculate_hap(snplst, pop, request, web, genome_build):
                         dbsnp_version + " (" + genome_build_vars[genome_build]['title'] + ") search coordinates for query variant. "
                 # throw an error in the event of missing query SNPs in 1000G data
                 geno[1] = snp_key
-            print(geno[1])
+            #print(geno[1])
             if snp_pos.count(geno[1]) == 1:
                 rs_query = rs_nums[snp_pos.index(geno[1])]
 
@@ -196,7 +196,7 @@ def calculate_hap(snplst, pop, request, web, genome_build):
                 continue
 
             rs_1000g = geno[2]
-
+            #print(rs_query, rs_1000g)
             if rs_query == rs_1000g:
                 rsnum = rs_1000g
             else:

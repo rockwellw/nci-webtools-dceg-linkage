@@ -361,18 +361,20 @@ def set_alleles(a1, a2):
     return(a1_n, a2_n)
 
 def parse_vcf(vcf):
-    delimiter = "#chr"
+    delimiter = "#"
     snp_lists = str(','.join(vcf)).split(delimiter)
     snp_dict = {}
-
+    #print(vcf)
     for snp in snp_lists[1:]:
         snp_tuple = snp.split(",")
         snp_key = snp_tuple[0].split("-")[-1].strip()
         vcf_list = []
-        for v in snp_tuple[1:]:#only choose the first one if dup
+      
+        for v in snp_tuple[1:2]:#only choose the first one if dup
             if len(v) > 0:
                 vcf_list.append(v)
-       
+        #vcf_list.append(snp_tuple.pop()) #always use the last one, even dup
+        
         snp_dict[snp_key] = vcf_list
-    return snp_dict
     #print(snp_dict)
+    return snp_dict
